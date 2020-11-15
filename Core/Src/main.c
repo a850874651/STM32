@@ -147,28 +147,46 @@ int main(void)
 //    //速度控制 PWM  7200 3000  3000/7200
 //    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_1,7200);
 
+    /*********************** 驱动两个小车电机 ***********************/
+    //正反转
+    //开启定时器
+    HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_2);
+
+    //第一个电机
+    HAL_GPIO_WritePin(GPIOA,GPIO_PIN_2,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOA,GPIO_PIN_3,GPIO_PIN_SET);
+
+    //第二个电机
+    HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOA,GPIO_PIN_5,GPIO_PIN_SET);
+
+    //第一个电机速度控制 PWM  7200 3000  3000/7200
+    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_1,7200);
+    //第一个电机速度控制 PWM  7200 3000  3000/7200
+    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_2,7200);
     /*********************** 驱动舵机 ***********************/
     //开启定时器
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
+    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
     //驱动舵机 PWM
     //0度
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3, 500);
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1, 500);
     //等2秒钟
     HAL_Delay(2000);
     //45度
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3, 1000);
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1, 1000);
     //等2秒钟
     HAL_Delay(2000);
     //90度
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3, 1500);
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1, 1500);
     //等2秒钟
     HAL_Delay(2000);
     //135度
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3, 2000);
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1, 2000);
     //等2秒钟
     HAL_Delay(2000);
     //180度
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3, 2500);
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1, 2500);
 
 
   /* USER CODE END 2 */
