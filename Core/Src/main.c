@@ -19,12 +19,32 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
+#ifdef __GNUC__
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif
+PUTCHAR_PROTOTYPE
+{
+    // 参数1： 使用哪个usart ,参数2： 字符， 参数3：输出数量，参数4：超时等待时间
+    HAL_UART_Transmit(&huart1 , (uint8_t *)&ch, 1 , 0xffff);
+    return ch;
+}
 
+//printf 替换成log
+#define LOG_ENABLE 1
+#if LOG_ENABLE
+#define log(format,...) printf(format"\r\n",##__VA_ARGS__)
+#else
+#define log(format,...)
+#endif
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -96,6 +116,8 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART1_UART_Init();
+  MX_TIM8_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
     /*********************** 蜂鸣器 ***********************/
 //  //响起来
@@ -113,12 +135,56 @@ int main(void)
     /*********************** 开启中断 ***********************/
     HAL_UART_Receive_IT(&huart1,data,1);
 
+    /*********************** 电机控制 ***********************/
+//    //正反转
+//    //开启定时器
+//    HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_1);
+//
+//    //通电 可以控制正反转
+//    HAL_GPIO_WritePin(GPIOA,GPIO_PIN_2,GPIO_PIN_RESET);
+//    HAL_GPIO_WritePin(GPIOA,GPIO_PIN_3,GPIO_PIN_SET);
+//
+//    //速度控制 PWM  7200 3000  3000/7200
+//    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_1,7200);
+
+    /*********************** 驱动舵机 ***********************/
+    //开启定时器
+    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
+    //驱动舵机 PWM
+    //0度
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3, 500);
+    //等2秒钟
+    HAL_Delay(2000);
+    //45度
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3, 1000);
+    //等2秒钟
+    HAL_Delay(2000);
+    //90度
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3, 1500);
+    //等2秒钟
+    HAL_Delay(2000);
+    //135度
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3, 2000);
+    //等2秒钟
+    HAL_Delay(2000);
+    //180度
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3, 2500);
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
     while (1) {
+//        //温度
+////        printf("temputer:%d\r\n",30);
+////        log("temputer:%d",30);
+//        //uint_8  8bit
+//        //float 4 32位
+//        //串口通信  115200  /100
+//        printf("termputer:%hd\r\n",(short)(36.5*100));
+//        HAL_Delay(1000);
         /*********************** 接收串口数据 ***********************/
         /**
          * 参数1:串口
